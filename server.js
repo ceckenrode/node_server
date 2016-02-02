@@ -1,26 +1,94 @@
 var http = require('http');
+var fs = require('fs');
+var url = require('url');
+var PORT = 8080;
 
-var GOODPORT = 7000;
-var BADPORT = 7500;
-var badArr = ["You suck", "Give up on life", "Do you even internet?", "What a moron"];
-var goodArr = ["You're great!", "You're incredible! Good Job!", "You're amazing!", " Fantastic job!"];
+var handleRequest = function(req, res) {
+  console.log('req.url', req.url);
+  var url_parts = url.parse(req.url);
+  switch (url_parts.pathname) {
+    case '/':
+      display_root(req, res);
+      break;
+    case '/home':
+      display_root(req, res);
+      break;
+    case '/favorite_food':
+      display_food(req, res);
+      break;
+    case '/css':
+      display_css(req, res);
+      break;
+    case '/favorite_movies':
+      display_movies(req, res);
+      break;
+    default:
+      display_404(req, res);
+      break;
+  };
+};
 
-var handleRequestGood = function(req, res) {
-  var rand = Math.floor((Math.random() * 4));
-  res.end(goodArr[rand]);
+var server = http.createServer(handleRequest);
+server.listen(PORT, function() {
+  console.log("Server is listening at http://localhost:%s", PORT);
+});
+
+var display_root = function(req, res) {
+  fs.readFile('home.html', function(err, data) {
+    if (err) {
+      return console.error(err);
+    }
+    res.writeHead(200, {
+      'Content-Type': 'text/html'
+    });
+    res.end(data);
+  });
 }
 
-var handleRequestBad = function(req, res) {
-  var rand = Math.floor((Math.random() * 4));
-  res.end(badArr[rand]);
+var display_food = function(req, res) {
+  fs.readFile('favorite_food.html', function(err, data) {
+    if (err) {
+      return console.error(err);
+    }
+    res.writeHead(200, {
+      'Content-Type': 'text/html'
+    });
+    res.end(data);
+  });
 }
 
-var serverGood = http.createServer(handleRequestGood);
-var serverBad = http.createServer(handleRequestBad);
+var display_css = function(req, res) {
+  fs.readFile('css.html', function(err, data) {
+    if (err) {
+      return console.error(err);
+    }
+    res.writeHead(200, {
+      'Content-Type': 'text/html'
+    });
+    res.end(data);
+  });
+}
 
-serverGood.listen(GOODPORT, function() {
-  console.log("Server is listening at http://localhost:%s", GOODPORT);
-});
-serverBad.listen(BADPORT, function() {
-  console.log("Server is listening at http://localhost:%s", BADPORT);
-});
+var display_movies = function(req, res) {
+  fs.readFile('favorite_movies.html', function(err, data) {
+    if (err) {
+      return console.error(err);
+    }
+    res.writeHead(200, {
+      'Content-Type': 'text/html'
+    });
+    res.end(data);
+  });
+}
+
+var display_404 = function(req, res) {
+  fs.readFile('404.html', function(err, data) {
+    if (err) {
+      return console.error(err);
+    }
+    res.writeHead(200, {
+      'Content-Type': 'text/html'
+    });
+    res.end(data);
+  });
+}
